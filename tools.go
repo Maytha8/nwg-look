@@ -1056,7 +1056,14 @@ func iconThemeName(path string) (string, bool, error) {
 
 	lines, err := loadTextFile(filepath.Join(path, "index.theme"))
 	if err != nil {
-		return name, hasDirs, err
+		return name, false, err
+	}
+
+	// respect Hidden=true #64
+	for _, line := range lines {
+		if strings.Contains(line, "Hidden") && strings.Contains(line, "true") {
+			return "", false, nil
+		}
 	}
 
 	for _, line := range lines {
